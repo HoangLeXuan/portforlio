@@ -28,6 +28,12 @@ function updateThemeIcon(theme) {
     }
 }
 
+// ===== PROJECT NAVIGATION FUNCTIONALITY =====
+function navigateToProject(projectSlug) {
+    // Navigate to project detail page
+    window.location.href = `./projects/${projectSlug}.html`;
+}
+
 // ===== SMOOTH SCROLLING FOR NAVIGATION =====
 document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     anchor.addEventListener('click', function (e) {
@@ -45,8 +51,8 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
 
 // ===== ACTIVE NAVIGATION HIGHLIGHT =====
 window.addEventListener('scroll', () => {
-    const sections = document.querySelectorAll('.section');
-    const navLinks = document.querySelectorAll('.nav-link');
+    const sections = document.querySelectorAll('section[id]');
+    const navLinks = document.querySelectorAll('.nav-link[href^="#"]');
     
     let current = '';
     
@@ -67,12 +73,66 @@ window.addEventListener('scroll', () => {
     });
 });
 
-// ===== ADD ACTIVE LINK STYLING =====
+// ===== PROJECT CARD CLICK HANDLERS =====
+document.addEventListener('DOMContentLoaded', function() {
+    // Add click event listeners to project cards if they exist
+    const projectCards = document.querySelectorAll('.project-card');
+    
+    projectCards.forEach(card => {
+        // Add cursor pointer style
+        card.style.cursor = 'pointer';
+        
+        // Add keyboard accessibility
+        card.setAttribute('tabindex', '0');
+        card.setAttribute('role', 'button');
+        
+        // Handle Enter key press for accessibility
+        card.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                card.click();
+            }
+        });
+    });
+});
+
+// ===== ACTIVE LINK STYLING =====
 const style = document.createElement('style');
 style.textContent = `
     .nav-link.active {
         color: var(--accent-color) !important;
         font-weight: 600;
     }
+    
+    .project-card:focus {
+        outline: 2px solid var(--accent-color);
+        outline-offset: 2px;
+    }
 `;
-document.head.appendChild(style); 
+document.head.appendChild(style);
+
+// ===== BACK TO TOP FUNCTIONALITY (Optional) =====
+function scrollToTop() {
+    window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+    });
+}
+
+// ===== IMAGE LAZY LOADING (Optional Enhancement) =====
+document.addEventListener('DOMContentLoaded', function() {
+    const images = document.querySelectorAll('img[data-src]');
+    
+    const imageObserver = new IntersectionObserver((entries, observer) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                const img = entry.target;
+                img.src = img.dataset.src;
+                img.classList.remove('lazy');
+                imageObserver.unobserve(img);
+            }
+        });
+    });
+    
+    images.forEach(img => imageObserver.observe(img));
+}); 
